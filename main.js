@@ -34,15 +34,15 @@ console.log(b);
 async function getData(){
     try{
         const response = await fetch("https://jsonplaceholder.typicode.com/posts");
+        if(!response.ok)throw Error("Something went wrong");
         const data = await response.json();
+
         data.forEach(el=>{
             document.body.append(createCard(el.title, el.body, el.id))  
         })
     }catch (error) {
-        console.log(error)
+        console.log(error.message)
     }
-
-    
 };
 getData();
 
@@ -63,4 +63,48 @@ function createCard(title, body, id){
 };
 
 //task 3 deep copy promise =======================================================
+const somObj = {
+    name:"ucha",
+    age:45,
+    hobis:[{collecting:"Postcards"},{making:"3D Printing"},[{test:"test"}]]
+};
+
+function deepCopy(object){
+    return new Promise((resolve, reject)=>{
+        // option 1 
+        if(object===null || typeof object!=="object")reject("not valid object, cant copy")
+        const copy = structuredClone(object);
+        resolve(copy); 
+
+
+        // //option 2 (option 1 is better, but this was good for practicing)
+        // if(object===null || typeof object!=="object")reject("not valid object, cant copy")
+        // const copy = Array.isArray(object)? [] : {};
+        // for(let key in object){
+        //     if(typeof object[key] === "object"){
+        //         if(Array.isArray(object[key])){
+        //             const copyed = Promise.all(object[key].map(el=>deepCopy(el).then(res=>res)))
+        //             copyed.then(res=>{copy[key] = res})
+        //         }else{
+        //             deepCopy(object[key]).then(res=> copy[key] = res)
+        //         }
+        //     }else{
+        //         copy[key] = object[key]
+        //     }
+        // }
+        // resolve(copy)
+    })
+ 
+};   
+
+deepCopy(somObj)
+    .then(res=>{
+        somObj.name="changed";
+        somObj.hobis[2][0].test = "changed"
+        console.log(somObj)
+        console.log(res)
+    })
+    .catch(error=>console.log(error))
+
+
 
